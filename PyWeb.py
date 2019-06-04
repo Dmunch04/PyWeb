@@ -1,65 +1,78 @@
+# Find X Center: (ScreenWidth / 2) - (ElementWidth / 2)
+# Find Y Center: (ScreenHeight / 2) - (ElementHeight / 2)
+
+import os
+from DavesLogger import Logs
+
 _Classes = {}
 _Elements = {}
 
-class Site:
-    def __init__ (self, file_name, file_type, file_path = ''):
-        self.file_name = file_name
-        self.file_type = file_type
-        self.file_path = file_path
+_TextTypes = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']
+_Keywords = ['left', 'middle', 'right', 'upper', 'lower']
 
-        _Elements[file_name] = {}
-        _Classes[file_name] = {}
+class Site:
+    def __init__ (self, FileName, FilePath = ''):
+        self.FileName = FileName
+        self.FilePath = FilePath
+
+        _Elements[FileName] = {}
+        _Classes[FileName] = {}
 
         self.Color = '#ffffff'
         self.FavIcon = ''
-        self.Title = 'MyPage'
+        self.Title = 'Untitled'
 
-        self.H1 = _Text ('Sans-Serif', 32, '#000000')
-        self.H2 = _Text ('Sans-Serif', 24, '#000000')
-        self.H3 = _Text ('Sans-Serif', 18.72, '#000000')
-        self.H4 = _Text ('Sans-Serif', 16, '#000000')
-        self.H5 = _Text ('Sans-Serif', 13.28, '#000000')
-        self.H6 = _Text ('Sans-Serif', 12, '#000000')
-        self.P = _Text ('Sans-Serif', 16, '#212121')
+        self.H1 = _Text ('h1', 'Sans-Serif', 32, '#000000')
+        self.H2 = _Text ('h2', 'Sans-Serif', 24, '#000000')
+        self.H3 = _Text ('h3', 'Sans-Serif', 18.72, '#000000')
+        self.H4 = _Text ('h4', 'Sans-Serif', 16, '#000000')
+        self.H5 = _Text ('h5', 'Sans-Serif', 13.28, '#000000')
+        self.H6 = _Text ('h6', 'Sans-Serif', 12, '#000000')
+        self.P = _Text ('p', 'Sans-Serif', 16, '#212121')
 
     def Add (self, _Type, _Class, _Position, _Text, _Button_Size = '', _IsLink = False, _Link = '#'):
         if not isinstance (_Class, Class):
-            print ('Class must be a class element!')
+            #print ('Class must be a class element!')
+            Logs.Error ('Class must be a class element!')
             return
 
-        if not _Type in _Elements[self.file_name].keys():
-            _Elements[self.file_name][_Type] = []
+        if not _Type in _Elements[self.FileName].keys():
+            _Elements[self.FileName][_Type] = []
 
-        if not _Class in _Classes[self.file_name].keys():
-            _Classes[self.file_name][_Class] = []
+        if not _Class in _Classes[self.FileName].keys():
+            _Classes[self.FileName][_Class] = []
 
-        _Elements[self.file_name][_Type].append([_Class, _Position, _Text, _Button_Size, _IsLink, _Link])
+        _Elements[self.FileName][_Type].append([_Class, _Position, _Text, _Button_Size, _IsLink, _Link])
 
     def Draw (self, _Type, _Path, _Position, _Size = '', _IsLink = False, _Link = '#'):
-        if not _Type in _Elements[self.file_name].keys():
-            _Elements[self.file_name][_Type] = []
+        if not _Type in _Elements[self.FileName].keys ():
+            _Elements[self.FileName][_Type] = []
 
         if _Size == '':
             size = (50, 50)
             _Size = size
 
-        _Elements[self.file_name][_Type].append([_Path, _Position, _Size, _IsLink, _Link])
+        _Elements[self.FileName][_Type].append ([_Path, _Position, _Size, _IsLink, _Link])
 
     def Complete (self):
-        finished_file = self.file_path + '/' + self.file_name + '.html'
+        FinishedPath = os.path.join (self.FilePath + self.FileName) + '.html'
 
-        html = Evaluate (self)
+        HTML = Evaluate (_Elements, self)
 
-        with open (finished_file, 'w+') as file: file.write (html)
+        with open (FinishedPath, 'w+') as File: File.write (HTML)
+
+        Logs.Success ('Successfully created the HTML file at: ' + FinishedPath)
 
 class Class:
     def __init__ (self, Name, _Site, TextType, Color = '#000000', Bg_Color = '#ffffff', IsBold = False):
         if not isinstance (_Site, Site):
-            print ('Site needs to be a site element!')
+            #print ('Site needs to be a site element!')
+            Logs.Error ('Site needs to be a site element!')
             return
 
         elif not isinstance (TextType, _Text):
-            print ('Text needs to be a text element!')
+            #print ('Text needs to be a text element!')
+            Logs.Error ('Text needs to be a text element!')
             return
 
         self.Name = Name
@@ -69,122 +82,107 @@ class Class:
         self.Bg_Color = Bg_Color
         self.IsBold = IsBold
 
-        if not Name in _Classes[_Site.file_name].keys():
-            _Classes[_Site.file_name][Name] = [TextType, Color, Bg_Color, IsBold]
+        if not Name in _Classes[_Site.FileName].keys():
+            _Classes[_Site.FileName][Name] = [TextType, Color, Bg_Color, IsBold]
 
 class _Text:
-    def __init__ (self, Font, Size, Color):
+    def __init__ (self, Name, Font, Size, Color):
+        self.Name = Name
         self.Font = Font
         self.Size = Size
         self.Color = Color
 
-class _FileType:
-    def __init__ (self, type):
-        self.type = type
+def Evaluate (_Data, _Site):
+    _HTML = '<html><head><title>{Title}</title><link rel = "shortcut icon" type = "image/png" href = "{Icon}" /><style>{{Style}}</style></head><body>{{Elements}}</body></html>'
 
-def Evaluate (Site):
-    _HTML = '<html><head><title>{title}</title><link rel = "shortcut icon" type = "image/png" href = "{icon}" /><style>{{style}}</style></head><body>{{elements}}</body></html>'
+    _Style_, _Elements_ = '', ''
 
-    Data = _Elements
+    _HTML = _HTML.format (Title = _Site.Title, Icon = _Site.FavIcon)
 
-    _style_ = ''
-    _elements_ = ''
+    _Style_ += '*{background-color:' + _Site.Color + ';}'
+    for Element in _Classes[_Site.FileName]:
+        CurClass = _Classes[_Site.FileName][Element]
 
-    _HTML = _HTML.format (title = Site.Title, icon = Site.FavIcon)
+        if not CurClass: continue
 
-    _style_ += '*{background-color:' + Site.Color + ';}'
-    for element in _Classes[Site.file_name]:
-        cur_class = _Classes[Site.file_name][element]
+        if CurClass[3] == True:
+            _Style_ += f'.{Element}' + '{' + 'font-family:{0};font-size:{1};background-color:{2};color:{3};font-weight:{4};position:absolute;border:none;'.format (CurClass[0].Font, CurClass[0].Size, CurClass[2], CurClass[1], 'bold') + '}'
 
-        if not cur_class: continue
-
-        if cur_class[3] == True:
-            _style_ += f'.{element}' + '{' + 'font-family:{0};font-size:{1};background-color:{2};color:{3};font-weight:{4};position:absolute;border:none;'.format (cur_class[0].Font, cur_class[0].Size, cur_class[2], cur_class[1], 'bold') + '}'
         else:
-            _style_ += f'.{element}' + '{' + 'font-family:{0};font-size:{1};background-color:{2};color:{3};position:absolute;border:none'.format (cur_class[0].Font, cur_class[0].Size, cur_class[2], cur_class[1]) + '}'
+            _Style_ += f'.{Element}' + '{' + 'font-family:{0};font-size:{1};background-color:{2};color:{3};position:absolute;border:none'.format (CurClass[0].Font, CurClass[0].Size, CurClass[2], CurClass[1]) + '}'
 
-    try: _texts = Data[Site.file_name]['TEXT']
-    except: pass
-    try: _buttons = Data[Site.file_name]['BUTTON']
-    except: pass
-    try: _images = Data[Site.file_name]['IMAGE']
-    except: pass
+    Object = _Data[_Site.FileName]
+    _Texts = Object.get ('TEXT')
+    _Buttons = Object.get ('BUTTON')
+    _Images = Object.get ('IMAGE')
 
     try:
-        for element in _texts:
-            current = ''
+        for Element in _Texts:
+            Current = ''
 
-            type = element[0].TextType
-            name = element[0].Name
-            cnt = element[2]
-            left = element[1][0]
-            top = element[1][1]
-            is_link = element[4]
-            link = element[5]
+            Type = Element[0].TextType
+            Name = Element[0].Name
+            Value = Element[2]
+            Left = Element[1][0]
+            Top = Element[1][1]
+            IsLink = Element[4]
+            Link = Element[5]
 
-            _link = '<a href = "{link_}">{{cnt_}}</a>'.format (link_ = link)
+            if Left.lower () == 'center':
+                Left = (1920 / 2) - (ElementWidth / 2)
 
-            if type == Site.H1:
-                current = '<h1 class = "{0}" style = "left:{1}px;top:{2}px;">{3}</h1>'.format (name, left, top, cnt)
+            _Link = '<a href = "{Link_}">{{Value_}}</a>'.format (Link_ = Link)
 
-            elif type == Site.H2:
-                current = '<h2 class = "{0}" style = "left:{1}px;top:{2}px;">{3}</h2>'.format (name, left, top, cnt)
-
-            elif type == Site.H3:
-                current = '<h3 class = "{0}" style = "left:{1}px;top:{2}px;">{3}</h3>'.format (name, left, top, cnt)
-
-            elif type == Site.H4:
-                current = '<h4 class = "{0}" style = "left:{1}px;top:{2}px;">{3}</h4>'.format (name, left, top, cnt)
-
-            elif type == Site.H5:
-                current = '<h5 class = "{0}" style = "left:{1}px;top:{2}px;">{3}</h5>'.format (name, left, top, cnt)
-
-            elif type == Site.H6:
-                current = '<hack6 class = "{0}" style = "left:{1}px;top:{2}px;">{3}</h6>'.format (name, left, top, cnt)
-
-            elif type == Site.P:
-                current = '<p class = "{0}" style = "left:{1}px;top:{2}px;">{3}</p>'.format (name, left, top, cnt)
+            if Type.Name.lower () in _TextTypes:
+                Current = '<{0} class = "{1}" style = "left:{2}px;top:{3}px;">{4}</{5}>'.format (Type.Name.lower(), Name, Left, Top, Value, Type.Name.lower ())
 
             else:
-                print ('Unkown text element!')
+                #print ('Unkown text element!')
+                Logs.Error ('Unkown text element!')
                 return
 
-            if is_link:
-                _elements_ += _link.format (cnt_ = current)
-            else:
-                _elements_ += current
-    except: pass
+            if IsLink: _Elements_ += _Link.format (Value_ = Current)
+
+            else: _Elements_ += Current
+
+    except: Logs.Debug ('No text elements..')
+
     try:
-        for element in _buttons:
-            left = element[1][0]
-            top = element[1][1]
-            if element[2] != '':
-                width = element[2][0]
-                height = element[2][1]
+        for Element in _Buttons:
+            Left = Element[1][0]
+            Top = Element[1][1]
 
-                _elements_ += '<form action = "{0}"><input class = "{1}" style = "left:{2}px;top:{3}px;width:{4};height:{5};" type = "submit" value = "{6}" /></form>'.format (element[5], element[0].Name, left, top, width, height, element[3])
+            if Element[2] != '':
+                Width = Element[2][0]
+                Height = Element[2][1]
+
+                _Elements_ += '<form action = "{0}"><input class = "{1}" style = "left:{2}px;top:{3}px;width:{4};height:{5};" type = "submit" value = "{6}" /></form>'.format (Element[5], Element[0].Name, Left, Top, Width, Height, Element[3])
+
             else:
-                _elements_ += '<form action = "{0}"><input class = "{1}" style = "left:{2}px;top:{3}px;" type = "submit" value = "{4}" /></form>'.format (element[5], element[0].Name, left, top, element[3])
-    except: pass
+                _Elements_ += '<form action = "{0}"><input class = "{1}" style = "left:{2}px;top:{3}px;" type = "submit" value = "{4}" /></form>'.format (Element[5], Element[0].Name, Left, Top, Element[3])
+
+    except: Logs.Debug ('No button elements..')
+
     try:
-        for element in _images:
-            left = element[1][0]
-            top = element[1][1]
-            width = element[2][0]
-            height = element[2][0]
-            is_link = element[3]
-            link = element[4]
+        for Element in _Images:
+            Left = Element[1][0]
+            Top = Element[1][1]
+            Width = Element[2][0]
+            Height = Element[2][0]
+            IsLink = Element[3]
+            Link = Element[4]
 
-            if is_link:
-                _elements_ += '<a href = "{0}"><img src = "{1}" width = "{2}" height = "{3}" style = "position:absolute;left:{4}px;top:{5}px;"></a>'.format (link, element[0], width, height, left, top)
+            if IsLink:
+                _Elements_ += '<a href = "{0}"><img src = "{1}" width = "{2}" height = "{3}" style = "position:absolute;left:{4}px;top:{5}px;"></a>'.format (Link, Element[0], Width, Height, Left, Top)
+
             else:
-                _elements_ += '<img src = "{0}" width = "{1}" height = "{2}" style = "position:absolute;left:{3}px;top:{4}px;">'.format (element[0], width, height, left, top)
-    except: pass
+                _Elements_ += '<img src = "{0}" width = "{1}" height = "{2}" style = "position:absolute;left:{3}px;top:{4}px;">'.format (Element[0], Width, Height, Left, Top)
 
-    return _HTML.format (style = _style_, elements = _elements_)
+    except: Logs.Debug ('No image elements..')
+
+    return _HTML.format (Style = _Style_, Elements = _Elements_)
 
 Text = 'TEXT'
 Button = 'BUTTON'
 Image = 'IMAGE'
-HTML = _FileType ('HTML')
-CSS = _FileType ('CSS')
+Center = 'CENTER'
