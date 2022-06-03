@@ -1,5 +1,5 @@
 import os
-from enum import Enum
+from enum import Enum, IntEnum
 from collections import namedtuple
 
 
@@ -22,6 +22,25 @@ class CSSStyleType(Enum):
     TAG = ""
 
 
+class CSSFieldValueType(IntEnum):
+    Number = 0
+    String = 1
+    Keyword = 2
+
+class CSSField(object):
+    __slots__ = ("name", "value", "value_type")
+
+    def __init__(self, name, value, value_type):
+        self.name = name
+        self.value = value
+        self.value_type = value_type
+
+    def __str__(self):
+        value = str(self.value)
+        #if self.value_type == CSSFieldValueType.String:
+            #value = f"\"{value}\""
+
+        return f"{self.name}: {value};"
 
 
 class Color(object):
@@ -51,22 +70,22 @@ class Color(object):
 class CSSStyle(object):
     __slots__ = ("name", "style_type", "fields")
 
-    def __init__(self, name, style_type=CSSStyleType.CLASS, fields={}):
+    def __init__(self, name, style_type=CSSStyleType.CLASS, fields=[]):
         self.name = name
         self.style_type = style_type
         self.fields = fields
 
-    def add_field(self, field_type, field_value):
-        self.fields[field_type] = field_value
+    def add_field(self, field: CSSField):
+        self.fields.append(field)
         return self
 
-    def remove_field(self, field_type):
-        del self.fields[field_type]
+    def remove_field(self, field_name):
+        print("implement")
         return self
 
     def __str__(self):
-        fields = [f"{field}:{self.fields[field]}" for field in self.fields]
-        return str(self.style_type) + self.name + "{" + ";".join(fields) + ";}"
+        fields = [str(field) for field in self.fields]
+        return self.style_type.value + self.name + "{" + "".join(fields) + "}"
 
 
 class HTMLElementStyle(object):
@@ -93,22 +112,20 @@ class TextStyle(HTMLElementStyle):
         self.css = CSSStyle(
             name,
             CSSStyleType.TAG,
-            {
-                "font-family": font,
-                "font-size": str(size),
-                "color": color.to_hex_string(),
-            },
+            [
+                CSSField("font-family", font, CSSFieldValueType.String),
+                CSSField("font-size", str(size), CSSFieldValueType.Number),
+                CSSField("color", color.to_hex_string(), CSSFieldValueType.String),
+            ],
         )
 
     def get_css(self):
         return self.css
 
     def get_inline_css(self):
-        css = ""
-        for name, value in self.css.fields.items():
-            css += f"{name}:{value};"
+        css = [str(field) for field in self.css.fields]
 
-        return css
+        return "".join(css)
 
 
 class ButtonStyle(HTMLElementStyle):
@@ -124,11 +141,11 @@ class ButtonStyle(HTMLElementStyle):
         self.css = CSSStyle(
             name,
             CSSStyleType.TAG,
-            {
-                "width": str(width),
-                "height": str(height),
-                "background-color": color.to_hex_string(),
-            },
+            [
+                CSSField("width", str(width), CSSFieldValueType.Number),
+                CSSField("height", str(height), CSSFieldValueType.Number),
+                CSSField("background-color", color.to_hex_string(), CSSFieldValueType.String),
+            ],
         )
 
     def get_css(self):
@@ -175,7 +192,8 @@ class HTMLText(HTMLElement):
             raise ValueError
 
     def to_html(self):
-        template = """<{text_type} style="{style}" class="{class_}" id="{id_}">{text}</{text_type}>"""
+        template = """<{text_type} {attrs}>{text}</{text_type}>"""
+        attrs = {}
 
         if not self.link is None:
             text = """<a href="{link}">{text}</a>""".format(
@@ -184,12 +202,25 @@ class HTMLText(HTMLElement):
             )
         else:
             text = self.text
+
+        if self.style:
+            attrs["style"] = self.style.get_inline_css()
+
+        if self.class_:
+            attrs["class"] = self.class_
+
+        if self.id_:
+            attrs["id"] = self.id_
+
+        attr_str = ""
+        for attr, value in attrs.items():
+            attr_str += f"{attr}=\"{value}\" "
+
+        attr_str = attr_str[0:-1]
         
         html = template.format(
             text_type=self.text_type.value,
-            style=f"top:{self.position[0]};left:{self.position[1]};",
-            class_=" ".join(self.classes),
-            id_=" ".join(self.ids),
+            attrs=attr_str,
             text=text,
         )
 
