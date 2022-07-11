@@ -13,15 +13,17 @@ class CSSPosition(Enum):
 
 
 class Position(object):
-    __slots__ = ("x", "y")
+    __slots__ = ("x", "y", "is_single")
 
     def __init__(
         self,
         x: Union[CSSPosition, Length],
         y: Union[Optional[CSSPosition], Length] = None,
+        is_single: bool = False,
     ):
         self.x = x
         self.y = y
+        self.is_single = is_single
 
         if self.y is None:
             if isinstance(self.x, CSSPosition):
@@ -46,4 +48,8 @@ class Position(object):
                 )
 
     def __str__(self) -> str:
-        return f"{str(self.x.value) if isinstance(self.x, CSSPosition) else str(self.x)} {str(self.y.value) if isinstance(self.y, CSSPosition) else str(self.y)}"
+        return (
+            f"{str(self.x.value) if isinstance(self.x, CSSPosition) else str(self.x)}"
+            if self.is_single
+            else f"{str(self.x.value) if isinstance(self.x, CSSPosition) else str(self.x)} {str(self.y.value) if isinstance(self.y, CSSPosition) else str(self.y)}"
+        )

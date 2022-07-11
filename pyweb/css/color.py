@@ -90,6 +90,11 @@ class Color(object):
 
     @classmethod
     @property
+    def TRANSPARENT(cls):
+        return Color.named("transparent")
+
+    @classmethod
+    @property
     def ALICE_BLUE(cls):
         return Color.hex("F0F8FF")
 

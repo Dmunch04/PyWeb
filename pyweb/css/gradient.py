@@ -3,6 +3,7 @@ from typing import List, Union, Optional, Tuple
 
 from pyweb.css.color import Color
 from pyweb.css.unit import Angle, AngleUnit, Length, RelativeLengthUnit
+from pyweb.css.position import Position, CSSPosition
 
 
 class CSSGradient(object):
@@ -127,22 +128,36 @@ class StartingPoint(object):
         return f"{str(self.k)}{(' ' + str(self.v)) if self.v is not None else ''}"
 
 
+class RadialShape(Enum):
+    CIRCLE = "circle"
+    ELLIPSE = "ellipse"
+
+
+class RadialSize(Enum):
+    CLOSEST_SIDE = "closest-side"
+    CLOSEST_CORNER = "closest-corner"
+    FARTHEST_SIDE = "farthest-side"
+    FARTHEST_CORNER = "farthest-corner"
+
+
 class GradientConic(CSSGradient):
     """
     Conic gradients transition colors progressively around a circle.
     """
 
-    __slots__ = ("colors", "from_angle", "at_pos")
+    __slots__ = ("colors", "from_angle", "at_pos", "repeating")
 
     def __init__(
         self,
         colors: List[ColorDegree],
         from_angle: Optional[Angle] = None,
         at_pos: Optional[StartingPoint] = None,
+        repeating: bool = False,
     ):
         self.colors = colors
         self.from_angle = from_angle
         self.at_pos = at_pos
+        self.repeating = repeating
 
     def __str__(self) -> str:
         from_at_str = ""
@@ -156,7 +171,13 @@ class GradientConic(CSSGradient):
         colors_str = ", ".join([str(color) for color in self.colors])
 
         return (
-            f"conic-gradient({(from_at_str + ', ') if from_at_str else ''}{colors_str})"
+            (
+                f"repeating-conic-gradient({(from_at_str + ', ') if from_at_str else ''}{colors_str})"
+            )
+            if self.repeating
+            else (
+                f"conic-gradient({(from_at_str + ', ') if from_at_str else ''}{colors_str})"
+            )
         )
 
 
@@ -165,15 +186,17 @@ class GradientLinear(CSSGradient):
     Linear gradients transition colors progressively along an imaginary line.
     """
 
-    __slots__ = ("colors", "direction")
+    __slots__ = ("colors", "direction", "repeating")
 
     def __init__(
         self,
         colors: Tuple[ColorStop, ColorHint],
         direction: Optional[Union[StartingPoint, Angle]] = None,
+        repeating: bool = False,
     ):
         self.colors = colors
         self.direction = direction
+        self.repeating = repeating
 
     def __str__(self) -> str:
         direction_str = ""
@@ -182,12 +205,62 @@ class GradientLinear(CSSGradient):
                 direction_str += "to "
             direction_str += str(self.direction) + ", "
 
-        return f"linear-gradient({direction_str if direction_str else ''}{', '.join([str(stop) for stop in self.colors])})"
+        return (
+            (
+                f"repeating-linear-gradient({direction_str if direction_str else ''}{', '.join([str(stop) for stop in self.colors])})"
+            )
+            if self.repeating
+            else (
+                f"linear-gradient({direction_str if direction_str else ''}{', '.join([str(stop) for stop in self.colors])})"
+            )
+        )
 
 
+# TODO: maybe redo unit/length + percent system so it makes it easier to differantiate between length and percentage
+# sources:
+#   - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient#values
+#   - https://developer.mozilla.org/en-US/docs/Web/CSS/length
 class GradientRadial(CSSGradient):
     """
     Radial gradients transition colors progressively from a center point (origin).
     """
 
-    pass
+    __slots__ = ("colors", "position", "shape", "size", "repeating")
+
+    def __init__(
+        self,
+        colors: List[Union[ColorStop, ColorHint]],
+        position: Optional[Position] = None,
+        shape: Optional[RadialShape] = None,
+        size: Optional[Union[RadialSize, Length]] = None,
+        repeating: bool = False,
+    ):
+        self.colors = colors
+        self.position = position
+        self.shape = shape
+        self.size = size
+        self.repeating = repeating
+
+    def __str__(self) -> str:
+        init_str = ""
+        if self.shape is not None:
+            init_str += self.shape.value + " "
+        if self.size is not None:
+            if isinstance(self.size, RadialSize):
+                init_str += self.size.value + " "
+            else:
+                init_str += str(self.size) + " "
+        if self.position is not None:
+            if init_str:
+                init_str += "at "
+            init_str += str(self.position) + " "
+
+        return (
+            (
+                f"repeating-radial-gradient({init_str.strip()}, {', '.join([str(stop) for stop in self.colors])})"
+            )
+            if self.repeating
+            else (
+                f"radial-gradient({init_str.strip()}, {', '.join([str(stop) for stop in self.colors])})"
+            )
+        )

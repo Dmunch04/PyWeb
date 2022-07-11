@@ -60,3 +60,19 @@ def test_css_color():
 
     print(Position(CSSPosition.LEFT))
     print(Position(Length(32, RelativeLengthUnit.REM)))
+
+    print(
+        GradientRadial(
+            [
+                ColorStop(Color.named("red"), 0),
+                ColorStop(Color.named("blue")),
+                ColorStop(
+                    Color.named("green"), Length(100, RelativeLengthUnit.PERCENT)
+                ),
+            ],
+            position=Position(
+                CSSPosition.CENTER, is_single=True
+            ),  # TODO: find a better solution than `is_single`
+            shape=RadialShape.CIRCLE,
+        )
+    )
