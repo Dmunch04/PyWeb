@@ -21,7 +21,7 @@ class URL(object):
         self.url = url
 
     def __str__(self) -> str:
-        return f"url({self.url})"
+        return f"url(\"{self.url}\")"
 
 
 class BaseProperty(Enum):
@@ -172,7 +172,7 @@ class BackgroundImage(Enum):
 
 
 class Style(object):
-    def __init__(self, name, style_type):
+    def __init__(self, name: str, style_type: StyleType):
         self.name = name
         self.style_type = style_type
 
