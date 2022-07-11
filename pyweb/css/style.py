@@ -21,7 +21,7 @@ class URL(object):
         self.url = url
 
     def __str__(self) -> str:
-        return f"url(\"{self.url}\")"
+        return f'url("{self.url}")'
 
 
 class BaseProperty(Enum):

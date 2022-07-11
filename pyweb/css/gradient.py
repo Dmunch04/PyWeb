@@ -1,5 +1,4 @@
 from enum import Enum
-from re import L
 from typing import List, Union, Optional, Tuple
 
 from pyweb.css.color import Color
@@ -49,7 +48,12 @@ class ColorStop(object):
 
     # TODO: allow for length along the gradient's axis (https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient#values)
     # TODO: is allowing for int for the stops correct?
-    def __init__(self, color: Color, stop_one: Optional[Union[Length, int]] = None, stop_two: Optional[Union[Length, int]] = None):
+    def __init__(
+        self,
+        color: Color,
+        stop_one: Optional[Union[Length, int]] = None,
+        stop_two: Optional[Union[Length, int]] = None,
+    ):
         self.color = color
         self.stop_one = stop_one
         self.stop_two = stop_two
@@ -106,9 +110,13 @@ class StartingPoint(object):
             if v is not None:
                 if not isinstance(self.v, CSSStartingPoint):
                     raise Exception("both starting point values must be of same type")
-                elif isinstance(self.k, HorizontalStartingPoint) and type(self.k) == type(self.v):
+                elif isinstance(self.k, HorizontalStartingPoint) and type(
+                    self.k
+                ) == type(self.v):
                     raise Exception("both values cannot be horizontal values")
-                elif isinstance(self.k, VerticalStartingPoint) and type(self.k) == type(self.v):
+                elif isinstance(self.k, VerticalStartingPoint) and type(self.k) == type(
+                    self.v
+                ):
                     raise Exception("both values cannot be vertical values")
                 self.v = str(self.v.value)
             self.k = str(self.k.value)
@@ -127,7 +135,10 @@ class GradientConic(CSSGradient):
     __slots__ = ("colors", "from_angle", "at_pos")
 
     def __init__(
-        self, colors: List[ColorDegree], from_angle: Optional[Angle] = None, at_pos: Optional[StartingPoint] = None
+        self,
+        colors: List[ColorDegree],
+        from_angle: Optional[Angle] = None,
+        at_pos: Optional[StartingPoint] = None,
     ):
         self.colors = colors
         self.from_angle = from_angle
@@ -144,7 +155,9 @@ class GradientConic(CSSGradient):
 
         colors_str = ", ".join([str(color) for color in self.colors])
 
-        return f"conic-gradient({(from_at_str + ', ') if from_at_str else ''}{colors_str})"
+        return (
+            f"conic-gradient({(from_at_str + ', ') if from_at_str else ''}{colors_str})"
+        )
 
 
 class GradientLinear(CSSGradient):
@@ -154,7 +167,11 @@ class GradientLinear(CSSGradient):
 
     __slots__ = ("colors", "direction")
 
-    def __init__(self, colors: Tuple[ColorStop, ColorHint], direction: Optional[Union[StartingPoint, Angle]] = None):
+    def __init__(
+        self,
+        colors: Tuple[ColorStop, ColorHint],
+        direction: Optional[Union[StartingPoint, Angle]] = None,
+    ):
         self.colors = colors
         self.direction = direction
 
