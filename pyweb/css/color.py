@@ -24,6 +24,11 @@ class Color(object):
         if self.color_type == ColorType.CURRENT_COLOR:
             return "currentcolor"
         elif self.color_type in (ColorType.HEX, ColorType.HEXA):
+            value = (
+                "".join(self.values[0][1:])
+                if self.values[0].startswith("#")
+                else self.values[0]
+            )
             return f"#{self.values[0]}"
         elif self.color_type in (ColorType.RGB, ColorType.RGBA):
             return f"rgb({', '.join(self.values)})"
