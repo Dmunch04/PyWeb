@@ -2,6 +2,7 @@ from enum import IntEnum, Enum
 from typing import Union
 
 
+# TODO: maybe collect all length units into one instead?
 class CSSLengthUnit:
     pass
 

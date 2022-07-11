@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from pyweb.css.unit import Length, Angle
 from pyweb.css.color import Color
@@ -115,8 +115,8 @@ class BackdropFilterDropShadow(CSSBackdropFilter):
         self,
         offset_x: Length,
         offset_y: Length,
-        blur_radius: Length = None,
-        color: Color = None,
+        blur_radius: Optional[Length] = None,
+        color: Optional[Color] = None,
     ):
         self.offset_x = offset_x
         self.offset_y = offset_y

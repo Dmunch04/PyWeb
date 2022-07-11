@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from pyweb.css.style import (
     BaseProperty,
@@ -49,7 +49,13 @@ class AnimationCubicBezier(CSSAnimation):
 
     __slots__ = ("a", "b", "c", "d")
 
-    def __init__(self, a: int, b: int, c: int, d: int):
+    def __init__(
+        self,
+        a: Union[float, int],
+        b: Union[float, int],
+        c: Union[float, int],
+        d: Union[float, int],
+    ):
         self.a = a
         self.b = b
         self.c = c
@@ -73,14 +79,14 @@ class Animation(object):
 
     def __init__(
         self,
-        name: Union[AnimationName, str] = None,
-        duration: Union[BaseProperty, Time] = "1s",
-        timing_function: Union[AnimationTimingFunction, CSSAnimation] = None,
-        delay: Union[BaseProperty, Time] = None,
-        iteration_count: Union[AnimationIterationCount, str] = None,
-        direction: AnimationDirection = None,
-        fill_mode: AnimationFillMode = None,
-        play_state: AnimationPlayState = None,
+        name: Optional[Union[AnimationName, str]] = None,
+        duration: Optional[Union[BaseProperty, Time]] = "1s",
+        timing_function: Optional[Union[AnimationTimingFunction, CSSAnimation]] = None,
+        delay: Optional[Union[BaseProperty, Time]] = None,
+        iteration_count: Optional[Union[AnimationIterationCount, str]] = None,
+        direction: Optional[AnimationDirection] = None,
+        fill_mode: Optional[AnimationFillMode] = None,
+        play_state: Optional[AnimationPlayState] = None,
     ):
         self.name = name
         self.duration = duration

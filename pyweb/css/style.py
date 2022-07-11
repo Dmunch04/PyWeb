@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, List, Union
+from typing import Any, List, Union, Dict, NoReturn
 
 from pyweb.css.animation import *
 from pyweb.css.backdropfilter import *
@@ -428,7 +428,7 @@ class Style(object):
         self.writing_mode = None
         self.z_index = None
 
-    def get_fields(self):
+    def get_fields(self) -> Dict[str, Any]:
         fields = {}
         for slot in self.__fields:
             if self.__getattribute__(slot):
@@ -453,7 +453,7 @@ class Style(object):
 
         return fields
 
-    def get_str(self):
+    def get_str(self) -> str:
         template = "{style_type}{name} {{\n{fields}\n}}"
 
         fields = []
@@ -464,14 +464,14 @@ class Style(object):
             style_type=self.style_type.value, name=self.name, fields="\n".join(fields)
         )
 
-    def get_inline_fields_str(self):
+    def get_inline_fields_str(self) -> str:
         fields = []
         for field, value in self.get_fields().items():
             fields.append(f"{field}:{value};")
 
         return "".join(fields)
 
-    def get_inline_str(self):
+    def get_inline_str(self) -> str:
         template = "{style_type}{name}{{{fields}}}"
 
         return template.format(
@@ -480,7 +480,7 @@ class Style(object):
             fields=self.get_inline_fields_str(),
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.get_inline_str()
 
     __fields = (
@@ -730,7 +730,7 @@ class Style(object):
         "z_index",
     )
 
-    def inject_field(self, field: str, value: str):
+    def inject_field(self, field: str, value: str) -> NoReturn:
         if not field in self.__fields:
             raise Exception("cannot inject value into non existing css field")
 
