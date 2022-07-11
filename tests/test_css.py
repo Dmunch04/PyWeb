@@ -1,5 +1,6 @@
-from pyweb.css import CSSColor
+from pyweb.css import Color, Length, RelativeLengthUnit
 
 
 def test_css_color():
-    print(CSSColor.ALICE_BLUE.values)
+    print(Color.ALICE_BLUE.values)
+    print(str(Length(7, RelativeLengthUnit.REM)))
