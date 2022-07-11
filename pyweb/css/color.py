@@ -29,7 +29,7 @@ class Color(object):
                 if self.values[0].startswith("#")
                 else self.values[0]
             )
-            return f"#{self.values[0]}"
+            return f"#{value}"
         elif self.color_type in (ColorType.RGB, ColorType.RGBA):
             return f"rgb({', '.join(self.values)})"
         elif self.color_type == ColorType.HSL:
