@@ -27,6 +27,7 @@ class CSSFieldValueType(IntEnum):
     String = 1
     Keyword = 2
 
+
 class CSSField(object):
     __slots__ = ("name", "value", "value_type")
 
@@ -37,8 +38,8 @@ class CSSField(object):
 
     def __str__(self):
         value = str(self.value)
-        #if self.value_type == CSSFieldValueType.String:
-            #value = f"\"{value}\""
+        # if self.value_type == CSSFieldValueType.String:
+        # value = f"\"{value}\""
 
         return f"{self.name}: {value};"
 
@@ -131,7 +132,14 @@ class TextStyle(HTMLElementStyle):
 class ButtonStyle(HTMLElementStyle):
     __slots__ = ("name", "text_style", "width", "height", "color", "css")
 
-    def __init__(self, name, text_style=None, width=100, height=80, color=Color.from_hex("#ffffff")):
+    def __init__(
+        self,
+        name,
+        text_style=None,
+        width=100,
+        height=80,
+        color=Color.from_hex("#ffffff"),
+    ):
         self.name = name
         self.text_style = text_style
         self.width = width
@@ -144,7 +152,9 @@ class ButtonStyle(HTMLElementStyle):
             [
                 CSSField("width", str(width), CSSFieldValueType.Number),
                 CSSField("height", str(height), CSSFieldValueType.Number),
-                CSSField("background-color", color.to_hex_string(), CSSFieldValueType.String),
+                CSSField(
+                    "background-color", color.to_hex_string(), CSSFieldValueType.String
+                ),
             ],
         )
 
@@ -214,10 +224,10 @@ class HTMLText(HTMLElement):
 
         attr_str = ""
         for attr, value in attrs.items():
-            attr_str += f"{attr}=\"{value}\" "
+            attr_str += f'{attr}="{value}" '
 
         attr_str = attr_str[0:-1]
-        
+
         html = template.format(
             text_type=self.text_type.value,
             attrs=attr_str,
@@ -255,7 +265,7 @@ class HTMLButton(HTMLElement):
 
     def to_html(self):
         template = """<form action={link}><input style="{style}" class="{class_}" id="{id_}" type="submit" value="{text}"></input></form>"""
-        
+
         html = template.format(
             link=self.link,
             style=f"top:{self.position[0]};left:{self.position[1]};",
@@ -329,39 +339,37 @@ class Page(object):
         self.page_style = page_style
 
     def add_text(self, text, position, text_type=TextType.P, class_="", id_=""):
-        self.elements.append(HTMLText(
-            text,
-            self.page_style.get_text_style(text_type),
-            text_type,
-            position,
-            None,
-            class_,
-            id_
-        ))
+        self.elements.append(
+            HTMLText(
+                text,
+                self.page_style.get_text_style(text_type),
+                text_type,
+                position,
+                None,
+                class_,
+                id_,
+            )
+        )
 
     def add_linked_text(
         self, text, position, text_type=TextType.P, class_="", id_="", link="#"
     ):
-        self.elements.append(HTMLText(
-            text,
-            self.page_style.get_text_style(text_type),
-            text_type,
-            position,
-            link,
-            class_,
-            id_
-        ))
+        self.elements.append(
+            HTMLText(
+                text,
+                self.page_style.get_text_style(text_type),
+                text_type,
+                position,
+                link,
+                class_,
+                id_,
+            )
+        )
 
-    def add_button(self, text, position, style=None, size=(80, 50), class_="", id_="", link="#"):
-        self.elements.append(HTMLButton(
-            text,
-            style,
-            position,
-            size,
-            link,
-            class_,
-            id_
-        ))
+    def add_button(
+        self, text, position, style=None, size=(80, 50), class_="", id_="", link="#"
+    ):
+        self.elements.append(HTMLButton(text, style, position, size, link, class_, id_))
 
     def write(self):
         for element in self.elements:

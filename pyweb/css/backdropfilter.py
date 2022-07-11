@@ -7,7 +7,8 @@ from pyweb.css.color import Color
 class CSSBackdropFilter(object):
     @classmethod
     @property
-    def value(self) -> str: return self.__str__()
+    def value(self) -> str:
+        return self.__str__()
 
 
 class BackdropFilterBlur(CSSBackdropFilter):
@@ -110,7 +111,13 @@ class BackdropFilterSepia(CSSBackdropFilter):
 class BackdropFilterDropShadow(CSSBackdropFilter):
     __slots__ = ("offset_x", "offset_y", "blur_radius", "color")
 
-    def __init__(self, offset_x: Length, offset_y: Length, blur_radius: Length = None, color: Color = None):
+    def __init__(
+        self,
+        offset_x: Length,
+        offset_y: Length,
+        blur_radius: Length = None,
+        color: Color = None,
+    ):
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.blur_radius = blur_radius
@@ -121,4 +128,6 @@ class BackdropFilterDropShadow(CSSBackdropFilter):
         if self.blur_radius:
             lengths.append(str(self.blur_radius))
 
-        return f"drop-shadow({' '.join(lengths)} {str(self.color) if self.color else ''})"
+        return (
+            f"drop-shadow({' '.join(lengths)} {str(self.color) if self.color else ''})"
+        )

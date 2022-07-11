@@ -49,9 +49,15 @@ class Color(object):
     @classmethod
     def rgb(cls, r: Union[int, str], g: Union[int, str], b: Union[int, str]):
         return Color(ColorType.RGB, [str(r), str(g), str(b)])
-    
+
     @classmethod
-    def rgba(cls, r: Union[int, str], g: Union[int, str], b: Union[int, str], a: Union[float, str]):
+    def rgba(
+        cls,
+        r: Union[int, str],
+        g: Union[int, str],
+        b: Union[int, str],
+        a: Union[float, str],
+    ):
         return Color(ColorType.RGBA, [str(r), str(g), str(b), str(a)])
 
     @classmethod
@@ -59,7 +65,13 @@ class Color(object):
         return Color(ColorType.RGB, [str(h), str(s), str(l)])
 
     @classmethod
-    def hsla(cls, h: Union[int, str], s: Union[int, str], l: Union[int, str], a: Union[float, str]):
+    def hsla(
+        cls,
+        h: Union[int, str],
+        s: Union[int, str],
+        l: Union[int, str],
+        a: Union[float, str],
+    ):
         return Color(ColorType.HSLA, [str(h), str(s), str(l), str(a)])
 
     @classmethod

@@ -8,23 +8,35 @@ from pyweb.css.unit import Angle, Length, RelativeLengthUnit
 class CSSGradient(object):
     @classmethod
     @property
-    def value(self) -> str: return self.__str__()
+    def value(self) -> str:
+        return self.__str__()
 
 
 class ColorDegree(object):
     __slots__ = ("color", "degree", "end")
 
-    def __init__(self, color: Color, degree: Optional[Union[Angle, Length]] = None, end: Optional[Union[Angle, Length]] = None):
+    def __init__(
+        self,
+        color: Color,
+        degree: Optional[Union[Angle, Length]] = None,
+        end: Optional[Union[Angle, Length]] = None,
+    ):
         self.color = color
         self.degree = degree
         self.end = end
 
         if self.degree is not None:
-            if isinstance(self.degree, Length) and not self.degree.unit == RelativeLengthUnit.PERCENT:
+            if (
+                isinstance(self.degree, Length)
+                and not self.degree.unit == RelativeLengthUnit.PERCENT
+            ):
                 raise Exception("color degree value must be an angle or percent value")
 
         if self.end is not None:
-            if isinstance(self.end, Length) and not self.end.unit == RelativeLengthUnit.PERCENT:
+            if (
+                isinstance(self.end, Length)
+                and not self.end.unit == RelativeLengthUnit.PERCENT
+            ):
                 raise Exception("color end value must be an angle or percent value")
 
     def __str__(self) -> str:
@@ -48,13 +60,21 @@ class VerticalStartingPoint(Enum):
 class StartingPoint(object):
     __slots__ = ("k", "v")
 
-    def __init__(self, k: Union[Angle, CSSStartingPoint], v: Optional[Union[Angle, CSSStartingPoint]] = None):
+    def __init__(
+        self,
+        k: Union[Angle, CSSStartingPoint],
+        v: Optional[Union[Angle, CSSStartingPoint]] = None,
+    ):
         self.k = k
         self.v = v
 
-        if isinstance(k, HorizontalStartingPoint) and isinstance(v, HorizontalStartingPoint):
+        if isinstance(k, HorizontalStartingPoint) and isinstance(
+            v, HorizontalStartingPoint
+        ):
             raise Exception("both values cannot be horizontal values")
-        elif isinstance(k, VerticalStartingPoint) and isinstance(v, VerticalStartingPoint):
+        elif isinstance(k, VerticalStartingPoint) and isinstance(
+            v, VerticalStartingPoint
+        ):
             raise Exception("both values cannot be vertical values")
 
     def __str__(self) -> str:
@@ -70,7 +90,9 @@ class GradientConic(CSSGradient):
     __slots__ = ("colors", "from_angle", "at_pos")
 
     # TODO: find type for at_pos (https://www.w3schools.com/cssref/func_conic-gradient.asp)
-    def __init__(self, colors: List[ColorDegree], from_angle: Angle = None, at_pos = None):
+    def __init__(
+        self, colors: List[ColorDegree], from_angle: Angle = None, at_pos=None
+    ):
         self.colors = colors
         self.from_angle = from_angle
         self.at_pos = at_pos

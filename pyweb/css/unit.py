@@ -24,7 +24,7 @@ class RelativeLengthUnit(CSSLengthUnit, IntEnum):
     VH = 6
     VMIN = 7
     VMAX = 8
-    PERCENT = 9 # %
+    PERCENT = 9  # %
 
 
 class Length(object):

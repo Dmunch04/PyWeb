@@ -1,13 +1,22 @@
 from typing import Union
 
-from pyweb.css.style import BaseProperty, AnimationName, AnimationTimingFunction, AnimationIterationCount, AnimationDirection, AnimationFillMode, AnimationPlayState
+from pyweb.css.style import (
+    BaseProperty,
+    AnimationName,
+    AnimationTimingFunction,
+    AnimationIterationCount,
+    AnimationDirection,
+    AnimationFillMode,
+    AnimationPlayState,
+)
 from pyweb.css.unit import Time
 
 
 class CSSAnimation(object):
     @classmethod
     @property
-    def value(self) -> str: return self.__str__()
+    def value(self) -> str:
+        return self.__str__()
 
 
 class AnimationSteps(CSSAnimation):
@@ -51,10 +60,28 @@ class AnimationCubicBezier(CSSAnimation):
 
 
 class Animation(object):
-    __slots__ = ("name", "duration", "timing_function", "delay",
-                 "iteration_count", "direction", "fill_mode", "play_state")
+    __slots__ = (
+        "name",
+        "duration",
+        "timing_function",
+        "delay",
+        "iteration_count",
+        "direction",
+        "fill_mode",
+        "play_state",
+    )
 
-    def __init__(self, name: Union[AnimationName, str] = None, duration: Union[BaseProperty, Time] = "1s", timing_function: Union[AnimationTimingFunction, CSSAnimation] = None, delay: Union[BaseProperty, Time] = None, iteration_count: Union[AnimationIterationCount, str] = None, direction: AnimationDirection = None, fill_mode: AnimationFillMode = None, play_state: AnimationPlayState = None):
+    def __init__(
+        self,
+        name: Union[AnimationName, str] = None,
+        duration: Union[BaseProperty, Time] = "1s",
+        timing_function: Union[AnimationTimingFunction, CSSAnimation] = None,
+        delay: Union[BaseProperty, Time] = None,
+        iteration_count: Union[AnimationIterationCount, str] = None,
+        direction: AnimationDirection = None,
+        fill_mode: AnimationFillMode = None,
+        play_state: AnimationPlayState = None,
+    ):
         self.name = name
         self.duration = duration
         self.timing_function = timing_function
