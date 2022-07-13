@@ -76,3 +76,23 @@ def test_css_color():
             shape=RadialShape.CIRCLE,
         )
     )
+
+    style = Style("a", StyleType.CLASS)
+    style.background_image = GradientLinear(
+        [
+            ColorStop(Color.named("red"), 0, Length(50, RelativeLengthUnit.PERCENT)),
+            ColorStop(Color.named("blue")),
+            ColorStop(
+                Color.named("green"),
+                Length(50, RelativeLengthUnit.PERCENT),
+                Length(100, RelativeLengthUnit.PERCENT),
+            ),
+        ]
+    )
+
+    border = Border(
+        Length(2, AbsoluteLengthUnit.PX), BorderStyle.SOLID, Color.named("red")
+    )
+    style.border = border
+
+    print(style.get_str())

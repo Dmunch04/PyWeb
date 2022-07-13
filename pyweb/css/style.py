@@ -6,6 +6,8 @@ from pyweb.css.backdropfilter import *
 from pyweb.css.color import *
 from pyweb.css.gradient import *
 from pyweb.css.unit import *
+from pyweb.css.border import *
+from pyweb.css.style_value import *
 
 
 class StyleType(Enum):
@@ -22,153 +24,6 @@ class URL(object):
 
     def __str__(self) -> str:
         return f'url("{self.url}")'
-
-
-class BaseProperty(Enum):
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class AccentColor(Enum):
-    AUTO = "auto"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class ContentAlignment(Enum):
-    STRETCH = "stretch"
-    CENTER = "center"
-    FLEX_START = "flex-start"
-    FLEX_END = "flex-end"
-    SPACE_BETWEEN = "space-between"
-    SPACE_AROUND = "space-around"
-    SPACE_EVENLY = "space-evenly"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class ItemAlignment(Enum):
-    STRETCH = "stretch"
-    CENTER = "center"
-    FLEX_START = "flex-start"
-    FLEX_END = "flex-end"
-    BASELINE = "baseline"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class SelfAlignment(Enum):
-    AUTO = "auto"
-    STRETCH = "stretch"
-    CENTER = "center"
-    FLEX_START = "flex-start"
-    FLEX_END = "flex-end"
-    BASELINE = "baseline"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class All(Enum):
-    INITIAL = "initial"
-    INHERIT = "inherit"
-    UNSET = "unset"
-
-
-class AnimationDirection(Enum):
-    NORMAL = "normal"
-    REVERSE = "reverse"
-    ALTERNATE = "alternate"
-    ALTERNATE_REVERSE = "alternate-reverse"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class AnimationFillMode(Enum):
-    NONE = "none"
-    FORWARDS = "forwards"
-    BACKWARDS = "backwards"
-    BOTH = "both"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class AnimationIterationCount(Enum):
-    INFINITE = "infinite"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class AnimationName(Enum):
-    NONE = "none"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class AnimationPlayState(Enum):
-    PAUSED = "paused"
-    RUNNING = "running"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class AnimationTimingFunction(Enum):
-    LINEAR = "linear"
-    EASE = "ease"
-    EASE_IN = "ease-in"
-    EASE_OUT = "ease-out"
-    EASE_IN_OUT = "ease-in-out"
-    STEP_START = "step-start"
-    STEP_END = "step-end"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class BackdropFilter(Enum):
-    NONE = "none"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class BackfaceVisibility(Enum):
-    VISIBLE = "visible"
-    HIDDEN = "hidden"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class BackgroundAttachment(Enum):
-    SCROLL = "scroll"
-    FIXED = "fixed"
-    LOCAL = "local"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class BackgroundBlendMode(Enum):
-    NORMAL = "normal"
-    MULTIPLY = "multiply"
-    SCREEN = "screen"
-    OVERLAY = "overlay"
-    DARKEN = "darken"
-    LIGHTEN = "lighten"
-    COLOR_DODGE = "color-dodge"
-    SATURATION = "saturation"
-    COLOR = "color"
-    LUMINOSITY = "luminosity"
-
-
-class BackgroundClip(Enum):
-    BORDER_BOX = "border-box"
-    PADDING_BOX = "padding-box"
-    CONTENT_BOX = "content-box"
-    INITIAL = "initial"
-    INHERIT = "inherit"
-
-
-class BackgroundImage(Enum):
-    NONE = "none"
-    INITIAL = "initial"
-    INHERIT = "inherit"
 
 
 class Style(object):
@@ -205,11 +60,11 @@ class Style(object):
         self.background_image: Union[
             BackgroundImage, URL, List[URL], CSSGradient
         ] = None
-        self.background_origin = None
-        self.background_position = None
-        self.background_repeat = None
-        self.background_size = None
-        self.border = None
+        self.background_origin: BackgroundOrigin = None
+        self.background_position: Union[BaseProperty, Position] = None
+        self.background_repeat: BackgroundRepeat = None
+        self.background_size: Union[BackgroundSize, Length] = None
+        self.border: Union[BaseProperty, Border] = None
         self.border_bottom = None
         self.border_bottom_color = None
         self.border_bottom_left_radius = None
@@ -431,7 +286,8 @@ class Style(object):
     def get_fields(self) -> Dict[str, Any]:
         fields = {}
         for slot in self.__fields:
-            if self.__getattribute__(slot):
+            value = self.__getattribute__(slot)
+            if value is not None:
                 name = slot.replace("_", "-")
 
                 if name in (
@@ -443,8 +299,6 @@ class Style(object):
                     "media",
                 ):
                     name = "@" + name
-
-                value = self.__getattribute__(slot)
 
                 if isinstance(value, Enum):
                     value = value.value

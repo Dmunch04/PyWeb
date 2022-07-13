@@ -2,8 +2,8 @@ from enum import Enum
 from typing import List, Union, Optional, Tuple
 
 from pyweb.css.color import Color
-from pyweb.css.unit import Angle, AngleUnit, Length, RelativeLengthUnit
-from pyweb.css.position import Position, CSSPosition
+from pyweb.css.unit import Angle, Length, RelativeLengthUnit
+from pyweb.css.position import Position
 
 
 class CSSGradient(object):
